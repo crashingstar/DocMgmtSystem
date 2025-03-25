@@ -40,7 +40,9 @@ export const columns: ColumnDef<Document | Folder>[] = [
               <div>
                 <Folder />
               </div>
-              <Link href={`/documents/${id}`}>{fileName}</Link>
+              <Link className="underline" href={`/folders/${id}`}>
+                {fileName}
+              </Link>
             </>
           ) : (
             <>
@@ -62,7 +64,7 @@ export const columns: ColumnDef<Document | Folder>[] = [
     accessorKey: "created_at",
     header: "Date",
     cell: ({ row }) => {
-      const createdAt = formatDate(row.getValue("created_at"));
+      const createdAt = formatDate(new Date(row.getValue("created_at")));
 
       return <div>{`${createdAt}`}</div>;
     },

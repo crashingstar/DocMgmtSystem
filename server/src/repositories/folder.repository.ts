@@ -2,17 +2,17 @@ import { PoolConnection, QueryError, QueryResult } from "mysql2";
 import { connection } from "../config/db";
 import { Folder } from "../model/folder";
 
-const selectAll = (): Promise<Folder[]> => {
-  const query = `
-    select * from folders WHERE parent_id = ? OR (parent_id IS NULL AND ? IS NULL)`;
+const getOne = (folder_id: string): Promise<QueryResult> => {
+  const query = `select * from folders WHERE id = ? `;
   return new Promise((resolve, reject) => {
     connection.getConnection((err: QueryError, conn: PoolConnection) => {
-      conn.query(query, [null, null], (err, resultSet) => {
+      conn.query(query, [folder_id], (err, resultSet) => {
         conn.release();
         if (err) {
+          console.error(err);
           return reject(err);
         }
-        return resolve(resultSet as Folder[]);
+        return resolve(resultSet);
       });
     });
   });
@@ -29,10 +29,11 @@ const addFolder = (folder: Folder): Promise<QueryResult> => {
 
     connection.getConnection((error: QueryError, conn: PoolConnection) => {
       conn.query(query, values, (err, result) => {
-        conn.release(); // Release the connection back to the pool
+        conn.release();
 
         if (err) {
-          return reject(err); // Reject if there's an error with the query
+          console.error(err);
+          return reject(err);
         }
 
         return resolve(result);
@@ -40,4 +41,4 @@ const addFolder = (folder: Folder): Promise<QueryResult> => {
     });
   });
 };
-export default { selectAll, addFolder };
+export default { addFolder, getOne };

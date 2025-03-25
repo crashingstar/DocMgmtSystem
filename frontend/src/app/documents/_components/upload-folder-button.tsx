@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -26,7 +25,7 @@ import { Loader2, Plus } from "lucide-react";
 
 export type UploadFolderProps = {
   parent_id?: string;
-  uploadDocument: () => void;
+  uploadFolder: (values: z.infer<typeof formSchema>) => void;
 };
 
 const formSchema = z.object({
@@ -34,7 +33,7 @@ const formSchema = z.object({
   owner_name: z.string().min(1).max(100),
 });
 
-export function UploadFolderButton() {
+export function UploadFolderButton({ uploadFolder }: UploadFolderProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,8 +43,7 @@ export function UploadFolderButton() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast("Folder Uploaded");
+    uploadFolder(values);
   }
 
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);

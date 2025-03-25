@@ -2,13 +2,12 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import routes from "./routes";
-// get express application
+import * as cors from "cors";
 const app = express();
-// body parser middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// define app port
-const port = process.env.PORT || 3000;
+app.use(cors());
+const port = process.env.PORT || 3001;
 
 app.use("/api", routes);
 // starts the server

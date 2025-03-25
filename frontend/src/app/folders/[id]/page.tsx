@@ -1,16 +1,23 @@
 "use client";
 import { toast } from "sonner";
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
-import { UploadFileButton } from "./_components/upload-file-button";
-import { UploadFolderButton } from "./_components/upload-folder-button";
+import { UploadFileButton } from "../../documents/_components/upload-file-button";
+import { UploadFolderButton } from "../../documents/_components/upload-folder-button";
+import { columns } from "../../documents/columns";
+import { DataTable } from "../../documents/data-table";
+import { useParams, useRouter } from "next/navigation";
 import { API_URL } from "@/constant";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { useDocuments } from "@/hooks/useDocuments";
-import SearchInput from "./_components/search-input";
+import { useFolderData } from "@/hooks/useFolderData";
+import SearchInput from "@/app/documents/_components/search-input";
 
-export default function DocumentPage() {
-  const { data, loading, fetchDocumentsAndFolders } = useDocuments();
+export default function FolderPage() {
+  const params = useParams<{ id: string }>();
+  const router = useRouter();
 
+  const { data, loading, fetchDocumentsAndFolders } = useDocuments(params.id);
+  const { folderData } = useFolderData(params?.id);
   async function uploadFile(values: {
     name: string;
     file_size: number;
@@ -18,7 +25,7 @@ export default function DocumentPage() {
   }) {
     const response = await fetch(`${API_URL}document`, {
       method: "POST",
-      body: JSON.stringify(values),
+      body: JSON.stringify({ ...values, folder_id: params.id }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -35,7 +42,7 @@ export default function DocumentPage() {
   async function uploadFolder(values: { name: string; owner_name: string }) {
     const response = await fetch(`${API_URL}folder`, {
       method: "POST",
-      body: JSON.stringify(values),
+      body: JSON.stringify({ ...values, parent_id: params.id }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -55,12 +62,19 @@ export default function DocumentPage() {
 
   return (
     <div className="flex flex-col gap-8 ">
-      <div className="text-4xl">Documents</div>
+      <Button className="w-20" variant="outline" onClick={router.back}>
+        <ArrowLeft />
+        Back
+      </Button>
+      <div className="text-4xl">{`Folder: ${folderData?.name}`}</div>
       <div className="flex justify-between">
         <SearchInput />
         <div className="flex gap-4">
-          <UploadFileButton uploadFile={uploadFile} />
-          <UploadFolderButton uploadFolder={uploadFolder} />
+          <UploadFileButton folder_id={params.id} uploadFile={uploadFile} />
+          <UploadFolderButton
+            parent_id={params.id}
+            uploadFolder={uploadFolder}
+          />
         </div>
       </div>
       <div className="container mx-auto py-10">

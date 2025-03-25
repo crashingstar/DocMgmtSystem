@@ -1,5 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
-export default function DocumentLayout({
+export default function FolderLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

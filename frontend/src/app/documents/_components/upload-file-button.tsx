@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -32,10 +31,10 @@ const formSchema = z.object({
 
 export type UploadFileProps = {
   folder_id?: string;
-  uploadFile: () => void;
+  uploadFile: (values: z.infer<typeof formSchema>) => void;
 };
 
-export function UploadFileButton() {
+export function UploadFileButton({ uploadFile }: UploadFileProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,8 +45,7 @@ export function UploadFileButton() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast("File Uploaded");
+    uploadFile(values);
   }
 
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
